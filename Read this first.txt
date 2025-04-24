@@ -1,0 +1,30 @@
+=========================
+✨ NOVA AI - README ✨
+=========================
+
+Made with rage, late nights, and too much caffeine by:
+👉 Bijan & Avinandan 💻🔥
+
+---
+
+ How to Run:
+
+1. First, run the **install_req.bat** file.
+   - This will install all the necessary dependencies.
+   - Just let it finish. It won’t bite (probably).
+
+2. Once it's done, run the **Nova AI** file.
+   - Sit back, relax, and prepare to be mildly impressed.
+
+---
+
+⚠️ Important Notes:
+- Don't delete any files unless you enjoy breaking things.
+- If something crashes, blame the system. Not us.
+- Works best on systems that aren't from the stone age.
+
+---
+
+🧠 Enjoy using Nova AI, and remember:
+    Real devs use dark mode 😎
+

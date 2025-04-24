@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Speech Recognition</title>
+</head>
+<body>
+    <button id="start" onclick="startRecognition()">Start Recognition</button>
+    <button id="end" onclick="stopRecognition()">Stop Recognition</button>
+    <p id="output"></p>
+    <p id="status" style="color:gray; font-size:12px;"></p>
+    <script>
+        const output = document.getElementById('output');
+        const status = document.getElementById('status');
+        let recognition;
+        let shouldRestart = true; // Flag to control restart behavior
+        
+        function updateStatus(message) {
+            status.textContent = new Date().toLocaleTimeString() + ': ' + message;
+            console.log(message);
+        }
+
+        function startRecognition() {
+            updateStatus("Starting recognition...");
+            
+            // Don't create a new recognition object if one exists
+            if (!recognition) {
+                try {
+                    recognition = new webkitSpeechRecognition() || new SpeechRecognition();
+                    recognition.lang = 'en';
+                    recognition.continuous = true;
+                    
+                    recognition.onstart = function() {
+                        updateStatus("Recognition started successfully");
+                        shouldRestart = true;
+                    };
+                    
+                    recognition.onresult = function(event) {
+                        const transcript = event.results[event.results.length - 1][0].transcript;
+                        output.textContent += transcript;
+                        updateStatus("Speech detected: '" + transcript + "'");
+                    };
+                    
+                    recognition.onend = function() {
+                        updateStatus("Recognition ended. ShouldRestart=" + shouldRestart);
+                        if (shouldRestart) {
+                            try {
+                                recognition.start();
+                                updateStatus("Recognition restarted");
+                            } catch (e) {
+                                updateStatus("Error restarting: " + e.message);
+                                // Wait a moment and try again
+                                setTimeout(() => {
+                                    try {
+                                        recognition.start();
+                                        updateStatus("Delayed restart successful");
+                                    } catch (de) {
+                                        updateStatus("Delayed restart failed: " + de.message);
+                                    }
+                                }, 300);
+                            }
+                        }
+                    };
+                    
+                    recognition.onerror = function(event) {
+                        updateStatus("Recognition error: " + event.error);
+                    };
+                } catch (e) {
+                    updateStatus("Error creating recognition: " + e.message);
+                    return;
+                }
+            } else {
+                updateStatus("Recognition object already exists");
+            }
+            
+            try {
+                recognition.start();
+                updateStatus("Start method called");
+            } catch (e) {
+                updateStatus("Error starting recognition: " + e.message);
+                // Try recreating the recognition object
+                recognition = null;
+                setTimeout(startRecognition, 500);
+            }
+        }
+
+        function stopRecognition() {
+            updateStatus("Stopping recognition...");
+            shouldRestart = false;
+            
+            if (recognition) {
+                try {
+                    recognition.stop();
+                    updateStatus("Stop method called");
+                } catch (e) {
+                    updateStatus("Error stopping recognition: " + e.message);
+                }
+            } else {
+                updateStatus("No recognition object to stop");
+            }
+            
+            output.innerHTML = "";
+        }
+    </script>
+</body>
+</html>
